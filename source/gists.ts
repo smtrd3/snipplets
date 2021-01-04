@@ -45,10 +45,6 @@ type GistType = {
 	};
 };
 
-type CreateGistResponse = {
-	id: string;
-};
-
 const API_EP = "https://api.github.com/gists";
 
 async function getGist(gistId: string) {
@@ -184,7 +180,7 @@ export class GistStore {
 				files: {
 					[GIST_FILE]: {
 						content: JSON.stringify({
-							updatedChunks,
+							chunks: updatedChunks,
 						}),
 					},
 				},

@@ -18,6 +18,7 @@
 	"dependencies": {
 		"@types/ink-spinner": "^3.0.0",
 		"@types/node": "^14.14.17",
+		"@types/prompt-sync": "^4.1.0",
 		"@types/shelljs": "^0.8.8",
 		"@types/shortid": "^0.0.29",
 		"dedent": "^0.7.0",
@@ -31,6 +32,8 @@
 		"marked-terminal": "^4.1.0",
 		"meow": "^8.1.0",
 		"node-fetch": "^2.6.1",
+		"prompt-confirm": "^2.0.4",
+		"prompt-sync": "^4.2.0",
 		"react": "^17.0.1",
 		"shelljs": "^0.8.4",
 		"shortid": "^2.2.16",

@@ -2,7 +2,8 @@ import { useInput } from "ink";
 import { ModuleTypes } from "./app";
 
 export function useRootInputs(
-	setModule: (type: ModuleTypes | ((type: ModuleTypes) => ModuleTypes)) => void
+	setModule: (type: ModuleTypes | ((type: ModuleTypes) => ModuleTypes)) => void,
+	selectedChunkId: string
 ) {
 	useInput((input, key) => {
 		if (key.escape) {

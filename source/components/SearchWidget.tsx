@@ -16,6 +16,7 @@ type SearchWidgetProps = {
 	fetching: boolean;
 	items: ChunkEntry[];
 	fetchChunks: () => void;
+	setSelectedId: (chunkId: string) => void;
 };
 
 type ChunkItemProps = {
@@ -35,6 +36,7 @@ export default function SearchWidget({
 	fetching,
 	items,
 	fetchChunks,
+	setSelectedId,
 }: SearchWidgetProps) {
 	const entryPerPage = 5;
 	const [selectedIndex, setSelectedIndex] = useState(0);
@@ -45,6 +47,7 @@ export default function SearchWidget({
 		if (key.downArrow) {
 			setSelectedIndex((curr) => {
 				const n = (curr + 1) % items.length;
+				setSelectedId(items[n]?.id as string);
 				setPage(() => {
 					return Math.floor(n / entryPerPage);
 				});
@@ -54,6 +57,7 @@ export default function SearchWidget({
 		if (key.upArrow) {
 			setSelectedIndex((curr) => {
 				const n = curr === 0 ? items.length - 1 : (curr - 1) % items.length;
+				setSelectedId(items[n]?.id as string);
 				setPage(() => {
 					return Math.floor(n / entryPerPage);
 				});
@@ -64,6 +68,7 @@ export default function SearchWidget({
 
 	useEffect(() => {
 		setSelectedIndex(0);
+		setSelectedId(items[0]?.id as string);
 		setPage(0);
 	}, [query]);
 
