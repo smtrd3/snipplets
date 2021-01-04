@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { GH_TOKEN, GIST_FILE, GIST_ID } from "./constants";
+import { GH_TOKEN, GIST_FILE } from "./constants";
 import { removeStopwords } from "stopword";
 import shortid from "shortid";
 
@@ -83,8 +83,12 @@ export class GistStore {
 
 	makeEntry(content: string) {
 		const id = shortid.generate();
-		const contentWithoutWhitespace = content.replace(/(?:\r\n|\r|\n)/g, " ");
-		const label = contentWithoutWhitespace.slice(0, 100);
+		const label = content
+			.replace(/(?:\r\n|\r|\n)/g, " ")
+			.replace(/[^1-z0-9 ]/g, "")
+			.replace(/`/g, "")
+			.slice(0, 100)
+			.trim();
 		const tags = removeStopwords(content.split(" "));
 		return {
 			id,

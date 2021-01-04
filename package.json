@@ -16,6 +16,7 @@
 		"dist/cli.js"
 	],
 	"dependencies": {
+		"@types/ink-spinner": "^3.0.0",
 		"@types/node": "^14.14.17",
 		"@types/shelljs": "^0.8.8",
 		"@types/shortid": "^0.0.29",

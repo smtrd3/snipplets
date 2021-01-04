@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SearchWidget from "./components/SearchWidget";
 import { Text, Box } from "ink";
 import NewSnippet from "./components/NewSnippet";
 import EditWidget from "./components/EditWidget";
 import InitWidget from "./components/InitWidget";
-import { GistStore } from "./gists";
+import { ChunkEntry, GistStore } from "./gists";
 import { getConfig, putConfig } from "./config";
 import { useRootInputs } from "./useRootInputs";
 
@@ -13,15 +13,27 @@ export type ModuleTypes = "init" | "edit" | "delete" | "new" | "search";
 export default function App() {
 	const [gistId, setGistId] = useState<string | null>(null);
 	const [module, setModule] = useState<ModuleTypes>("init");
-	useRootInputs(setModule);
 	const [gistStore, setGistStore] = useState<GistStore | null>(null);
+	const [chunksFetching, setChunksFetching] = useState(false);
+	const [chunks, setChunks] = useState<ChunkEntry[]>([]);
+	useRootInputs(setModule);
+
+	const fetchChunks = async () => {
+		if (gistId) {
+			setChunksFetching(true);
+			const chunks = (await gistStore?.getChunks(gistId)) || [];
+			setChunks(chunks);
+			setChunksFetching(false);
+		}
+	};
 
 	const onCreate = useCallback(
 		async (content: string) => {
+			setChunks([]);
+			setModule("search");
 			if (gistId) {
 				await gistStore?.createChunk(content, gistId);
 			}
-			setModule("search");
 		},
 		[gistId]
 	);
@@ -52,7 +64,13 @@ export default function App() {
 			case "init":
 				return <InitWidget onInit={getToken} />;
 			case "search":
-				return <SearchWidget store={gistStore} gistId={gistId} />;
+				return (
+					<SearchWidget
+						fetchChunks={fetchChunks}
+						fetching={chunksFetching}
+						items={chunks}
+					/>
+				);
 			case "new":
 				return <NewSnippet onCreate={onCreate} />;
 			case "edit":
@@ -63,9 +81,9 @@ export default function App() {
 
 	return (
 		<>
-			<Box>
-				<Text>🏠Esc </Text>
-				<Text color="redBright">Ctrl [n | d | e]</Text>
+			<Box width={100}>
+				<Text>🏡 Esc </Text>
+				<Text color="redBright">Ctrl + [n | d | e]</Text>
 			</Box>
 			{page()}
 		</>
