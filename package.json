@@ -13,7 +13,8 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"start": "npm run build && dist/cli.js"
+		"start": "npm run build && dist/cli.js",
+		"prepublish": "npm run build"
 	},
 	"files": [
 		"dist/**/*.js"
