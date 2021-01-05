@@ -84,7 +84,8 @@ export class GistStore {
 			.replace(/[^1-z0-9 ]/g, "")
 			.replace(/`/g, "")
 			.slice(0, 100)
-			.trim();
+			.trim()
+			.toLowerCase();
 		const tags = removeStopwords(content.split(" "));
 		return {
 			id,

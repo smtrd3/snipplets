@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import SearchWidget from "./components/SearchWidget";
-import { Text, Box } from "ink";
+import { Text, Box, measureElement, DOMElement } from "ink";
 import NewSnippet from "./components/NewSnippet";
 import EditWidget from "./components/EditWidget";
 import InitWidget from "./components/InitWidget";
@@ -19,6 +19,8 @@ export default function App() {
 	const [chunks, setChunks] = useState<ChunkEntry[]>([]);
 	const [selectedChunkId, setSelectedChunkId] = useState<string>("");
 	const noUpdateRef = useRef(false);
+	const ref = useRef(null);
+	const [width, setWidth] = useState(0);
 
 	useRootInputs(setModule, selectedChunkId);
 
@@ -72,6 +74,12 @@ export default function App() {
 	};
 
 	useEffect(() => {
+		if (ref.current) {
+			const { width } = measureElement((ref.current as unknown) as DOMElement);
+			setTimeout(() => {
+				setWidth(width);
+			}, 20);
+		}
 		const config = getConfig();
 		if (config) {
 			const store = new GistStore(config.token);
@@ -104,14 +112,24 @@ export default function App() {
 			case "delete":
 				return <RemoveChunk onConfirm={onRemove} />;
 		}
-		return <Text>{module} module is not defined</Text>;
 	};
 
 	return (
 		<>
-			<Box width={100}>
-				<Text>🏡 Esc </Text>
-				<Text color="redBright">Ctrl + [n | d | e]</Text>
+			<Box paddingLeft={1}>
+				<Text color="green">
+					Home <Text color="grey">(Esc) | </Text>
+				</Text>
+				<Text color="redBright">Ctrl + </Text>
+				<Text color="blue">
+					New <Text color="grey">(N) </Text>
+				</Text>
+				<Text color="blue">
+					Update <Text color="grey">(E) </Text>
+				</Text>
+				<Text color="blue">
+					Delete <Text color="grey">(D) </Text>
+				</Text>
 			</Box>
 			{page()}
 		</>

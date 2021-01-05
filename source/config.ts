@@ -1,11 +1,10 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { homedir } from "os";
-import path from "path";
 import { CONFIG_FILE } from "./constants";
+import { filePathInHomeDir } from "./utils";
 
 export type Config = { gistId: string; token: string };
 
-const CONFIG_FILE_PATH = path.join(homedir(), CONFIG_FILE);
+const CONFIG_FILE_PATH = filePathInHomeDir(CONFIG_FILE);
 
 export function getConfig() {
 	const exists = existsSync(CONFIG_FILE_PATH);

@@ -1,5 +1,5 @@
 import { Box, Text, useInput } from "ink";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useState } from "react";
 import TextInput from "ink-text-input";
 import marked from "marked";
@@ -26,8 +26,9 @@ type ChunkItemProps = {
 
 const ChunkItem = ({ label, selected }: ChunkItemProps) => {
 	return (
-		<Text color="blueBright">
-			{selected ? "⚪" : "⚫"} {label.slice(0, 100)}
+		<Text color="blueBright" wrap="truncate-end">
+			<Text color={selected ? "greenBright" : "grey"}>{">> "}</Text>
+			<Text underline={selected}>{label}</Text>
 		</Text>
 	);
 };
@@ -79,38 +80,48 @@ export default function SearchWidget({
 	return (
 		<Box flexDirection="column">
 			{fetching === false && (
-				<Box>
+				<Box borderColor="grey" borderStyle="single">
 					<Text color="yellow" bold>
-						🔎 SEARCH:{" "}
+						:<Text> </Text>
 					</Text>
-					<TextInput value={query} onChange={setQuery} />
+					<TextInput
+						value={query}
+						onChange={setQuery}
+						placeholder="Search chunks"
+					/>
 				</Box>
 			)}
-			<Box flexDirection="column" marginY={1}>
-				{fetching && (
-					<Box>
-						<Spinner type="dots" />
-						<Text color="green"> Loading...</Text>
-					</Box>
-				)}
-				{!fetching && (
-					<Text color="gray">
-						{selectedIndex + 1} of {items.length}
-					</Text>
-				)}
-				{items
-					.slice(page * entryPerPage, (page + 1) * entryPerPage)
-					.map((item, index) => {
-						return (
-							<ChunkItem
-								key={item.id}
-								label={item.label}
-								selected={selectedIndex === page * entryPerPage + index}
-							/>
-						);
-					})}
+			<Box borderStyle="single" borderColor="grey">
+				<Box flexDirection="column" width={40} paddingRight={3}>
+					{fetching && (
+						<Box>
+							<Spinner type="dots" />
+							<Text color="green"> Loading...</Text>
+						</Box>
+					)}
+					{!fetching && (
+						<Box paddingLeft={3}>
+							<Text color="redBright">
+								{selectedIndex + 1} of {items.length}
+							</Text>
+						</Box>
+					)}
+					{items
+						.slice(page * entryPerPage, (page + 1) * entryPerPage)
+						.map((item, index) => {
+							return (
+								<ChunkItem
+									key={item.id}
+									label={item.label}
+									selected={selectedIndex === page * entryPerPage + index}
+								/>
+							);
+						})}
+				</Box>
+				<Box flexGrow={1}>
+					<Text>{marked(items[selectedIndex]?.content || "")}</Text>
+				</Box>
 			</Box>
-			<Text>{marked(items[selectedIndex]?.content || "")}</Text>
 		</Box>
 	);
 }
