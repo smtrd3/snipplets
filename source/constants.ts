@@ -7,5 +7,5 @@ description about the snippet
 (attachment)[http://download-url]
 `;
 
-export const GIST_FILE = "snippets.json";
-export const CONFIG_FILE = ".snippets-conf";
+export const GIST_FILE = "snipplets.json";
+export const CONFIG_FILE = ".snipplets.json";

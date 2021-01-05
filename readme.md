@@ -1,9 +1,9 @@
-A CLI based snippet manager that stores the snippets in a github gist
+A CLI based snippet manager that uses github gists as storage
 
 ### Installation
 
-`npm i -g sniplets`
+`npm i -g snipplets`
 
 ### Usage
 
-Run command `sniplets`
+Run command `snipplets`
