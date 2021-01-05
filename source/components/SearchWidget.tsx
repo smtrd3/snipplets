@@ -4,7 +4,7 @@ import { useState } from "react";
 import TextInput from "ink-text-input";
 import marked from "marked";
 import markedTerminal from "marked-terminal";
-import { ChunkEntry } from "../gists";
+import { ChunkEntry } from "../GistStore";
 import Spinner from "ink-spinner";
 
 marked.setOptions({

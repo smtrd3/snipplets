@@ -1,6 +1,7 @@
 {
 	"extends": "@sindresorhus/tsconfig",
 	"compilerOptions": {
+		"target": "ES2015",
 		"jsx": "react",
 		"esModuleInterop": true,
 		"outDir": "dist",

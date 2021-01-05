@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { GH_TOKEN, GIST_FILE } from "./constants";
+import { GIST_FILE } from "./constants";
 import { removeStopwords } from "stopword";
 import shortid from "shortid";
 import sortByFrequency from "sortbyfrequency";
@@ -48,11 +48,11 @@ type GistType = {
 
 const API_EP = "https://api.github.com/gists";
 
-async function getGist(gistId: string) {
+async function getGist(token: string, gistId: string) {
 	return (await fetch(`${API_EP}/${gistId}`, {
 		headers: {
 			Accept: "application/vnd.github.v3+json",
-			Authorization: `token ${GH_TOKEN}`,
+			Authorization: `token ${token}`,
 		},
 	}).then((response) => response.json())) as GistType;
 }
@@ -99,7 +99,7 @@ export class GistStore {
 	}
 
 	async getFileContent(fileName: string, gistId: string) {
-		const gist: GistType = await getGist(gistId);
+		const gist: GistType = await getGist(this.token, gistId);
 		const content = gist.files[fileName]?.content;
 		if (!content) {
 			throw new Error("File lookup failed inside gist");

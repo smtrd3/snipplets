@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import SearchWidget from "./components/SearchWidget";
-import { Text, Box, measureElement, DOMElement } from "ink";
+import { Text, Box } from "ink";
 import NewSnippet from "./components/NewSnippet";
 import EditWidget from "./components/EditWidget";
 import InitWidget from "./components/InitWidget";
-import { ChunkEntry, GistStore } from "./gists";
+import { ChunkEntry, GistStore } from "./GistStore";
 import { getConfig, putConfig } from "./config";
 import { useRootInputs } from "./useRootInputs";
 import RemoveChunk from "./components/RemoveChunk";
@@ -133,17 +133,20 @@ export default function App() {
 		<>
 			<Box paddingLeft={1}>
 				<Text color="green">
-					Home <Text color="grey">(Esc) | </Text>
+					Home<Text color="grey">(Esc) | </Text>
 				</Text>
 				<Text color="redBright">Ctrl + </Text>
 				<Text color="blue">
-					New <Text color="grey">(N) </Text>
+					New<Text color="grey">(N) </Text>
 				</Text>
 				<Text color="blue">
-					Update <Text color="grey">(E) </Text>
+					Update<Text color="grey">(E) </Text>
 				</Text>
 				<Text color="blue">
-					Delete <Text color="grey">(D) </Text>
+					Delete<Text color="grey">(D) </Text>
+				</Text>
+				<Text color="blue">
+					Exit<Text color="grey">(C) </Text>
 				</Text>
 			</Box>
 			{page()}
