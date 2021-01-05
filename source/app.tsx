@@ -84,6 +84,10 @@ export default function App() {
 		const store = new GistStore(token);
 		setGistStore(store);
 		const gistId = await store.createGist();
+		if (!gistId) {
+			console.error("Invalid token!");
+			process.exit(1);
+		}
 		setGistId(gistId);
 		putConfig({ gistId, token });
 		setModule("search");

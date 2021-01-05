@@ -15,8 +15,10 @@ export default function ({ onInit }: InitWidgetProps) {
 	const [busy, setBusy] = useState(false);
 
 	const onTokenSubmit = (tokenValue: string) => {
-		setBusy(true);
-		onInit(tokenValue);
+		if (!busy) {
+			setBusy(true);
+			onInit(tokenValue);
+		}
 	};
 
 	return (
@@ -34,7 +36,11 @@ export default function ({ onInit }: InitWidgetProps) {
 				<Text color="grey">(The token should have "gists" scope)</Text>
 			</Box>
 			<Box>
-				{busy && <Spinner type="dots" />}
+				{busy && (
+					<Box marginRight={1}>
+						<Spinner type="dots" />
+					</Box>
+				)}
 				<TextInput
 					value={token}
 					placeholder="Enter github token"
