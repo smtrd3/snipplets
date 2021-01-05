@@ -1,4 +1,4 @@
-import { Box, Text } from "ink";
+import { Box } from "ink";
 import TextInput from "ink-text-input";
 import React from "react";
 import { useState } from "react";

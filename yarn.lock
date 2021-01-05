@@ -5118,6 +5118,11 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
+sortbyfrequency@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/sortbyfrequency/-/sortbyfrequency-1.0.11.tgz#c23a94734de26b2e60a4b74e8fe5170b180dee26"
+  integrity sha512-jGpeSRCS3ggtrgWWSB1k7b/EwJOH4msVpEBmqAXC1ce/ykNTUfFNcWvUsQqVV7zXNEvszy3RTGxWzJRFlVEfnw==
+
 source-map-resolve@^0.5.0:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/source-map-resolve/-/source-map-resolve-0.5.3.tgz#190866bece7553e1f8f267a2ee82c606b5509a1a"

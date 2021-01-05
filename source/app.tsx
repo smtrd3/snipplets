@@ -19,8 +19,6 @@ export default function App() {
 	const [chunks, setChunks] = useState<ChunkEntry[]>([]);
 	const [selectedChunkId, setSelectedChunkId] = useState<string>("");
 	const noUpdateRef = useRef(false);
-	const ref = useRef(null);
-	const [width, setWidth] = useState(0);
 
 	useRootInputs(setModule, selectedChunkId);
 
@@ -31,20 +29,6 @@ export default function App() {
 			const chunks = (await gistStore?.getChunks(gistId)) || [];
 			setChunks(chunks);
 			setChunksFetching(false);
-		}
-	};
-
-	const onRemove = async (intent: boolean) => {
-		noUpdateRef.current = true;
-		setChunks([]);
-		setChunksFetching(true);
-		setModule("search");
-		if (intent && gistId && selectedChunkId) {
-			await gistStore?.removeChunk(gistId, selectedChunkId);
-			noUpdateRef.current = false;
-			await fetchChunks();
-		} else {
-			noUpdateRef.current = false;
 		}
 	};
 
@@ -65,21 +49,47 @@ export default function App() {
 		[gistId]
 	);
 
+	const onEdit = useCallback(
+		async (content: string) => {
+			noUpdateRef.current = true;
+			setChunks([]);
+			setChunksFetching(true);
+			setModule("search");
+			if (gistId) {
+				await gistStore?.updateChunk(gistId, selectedChunkId, content);
+				noUpdateRef.current = false;
+				await fetchChunks();
+			} else {
+				noUpdateRef.current = false;
+			}
+		},
+		[gistId, selectedChunkId]
+	);
+
+	const onRemove = async (intent: boolean) => {
+		noUpdateRef.current = true;
+		setChunks([]);
+		setChunksFetching(true);
+		setModule("search");
+		if (intent && gistId && selectedChunkId && chunks.length > 0) {
+			await gistStore?.removeChunk(gistId, selectedChunkId);
+			noUpdateRef.current = false;
+			await fetchChunks();
+		} else {
+			noUpdateRef.current = false;
+		}
+	};
+
 	const getToken = async (token: string) => {
 		const store = new GistStore(token);
 		setGistStore(store);
 		const gistId = await store.createGist();
 		setGistId(gistId);
 		putConfig({ gistId, token });
+		setModule("search");
 	};
 
 	useEffect(() => {
-		if (ref.current) {
-			const { width } = measureElement((ref.current as unknown) as DOMElement);
-			setTimeout(() => {
-				setWidth(width);
-			}, 20);
-		}
 		const config = getConfig();
 		if (config) {
 			const store = new GistStore(config.token);
@@ -108,7 +118,12 @@ export default function App() {
 			case "new":
 				return <NewSnippet onCreate={onCreate} />;
 			case "edit":
-				return <EditWidget />;
+				return (
+					<EditWidget
+						onChange={onEdit}
+						content={chunks.find((ch) => ch.id === selectedChunkId)?.content}
+					/>
+				);
 			case "delete":
 				return <RemoveChunk onConfirm={onRemove} />;
 		}

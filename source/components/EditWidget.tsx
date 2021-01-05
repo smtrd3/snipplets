@@ -5,7 +5,7 @@ import { CONTENT_TEMPLATE, TEMP_FILE } from "../constants";
 
 type NewSnippetProps = {
 	content?: string;
-	onChange?: (content: string) => void;
+	onChange: (content: string) => void;
 };
 
 export default function EditWidget({ content, onChange }: NewSnippetProps) {

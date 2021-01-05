@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import { GH_TOKEN, GIST_FILE } from "./constants";
 import { removeStopwords } from "stopword";
 import shortid from "shortid";
+import sortByFrequency from "sortbyfrequency";
 
 type GistType = {
 	id: string;
@@ -79,14 +80,16 @@ export class GistStore {
 
 	makeEntry(content: string) {
 		const id = shortid.generate();
-		const label = content
+		const contentWithoutWhitespaceAndSpecialChars = content
 			.replace(/(?:\r\n|\r|\n)/g, " ")
 			.replace(/[^1-z0-9 ]/g, "")
-			.replace(/`/g, "")
-			.slice(0, 100)
-			.trim()
-			.toLowerCase();
-		const tags = removeStopwords(content.split(" "));
+			.replace(/`/g, "");
+		const label = contentWithoutWhitespaceAndSpecialChars.slice(0, 100).trim();
+		const tags = sortByFrequency(
+			removeStopwords(
+				contentWithoutWhitespaceAndSpecialChars.toLowerCase().split(" ")
+			).filter((tag) => tag.trim() !== "")
+		);
 		return {
 			id,
 			label,
@@ -160,7 +163,7 @@ export class GistStore {
 				files: {
 					[GIST_FILE]: {
 						content: JSON.stringify({
-							updatedChunks,
+							chunks: updatedChunks,
 						}),
 					},
 				},

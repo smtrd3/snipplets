@@ -37,6 +37,7 @@
 		"react": "^17.0.1",
 		"shelljs": "^0.8.4",
 		"shortid": "^2.2.16",
+		"sortbyfrequency": "^1.0.11",
 		"stopword": "^1.0.6"
 	},
 	"ava": {
