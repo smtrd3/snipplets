@@ -80,15 +80,16 @@ export class GistStore {
 
 	makeEntry(content: string) {
 		const id = shortid.generate();
-		const contentWithoutWhitespaceAndSpecialChars = content
+		const normalizedContent = content
 			.replace(/(?:\r\n|\r|\n)/g, " ")
 			.replace(/[^1-z0-9 ]/g, "")
-			.replace(/`/g, "");
-		const label = contentWithoutWhitespaceAndSpecialChars.slice(0, 100).trim();
+			.replace(/`/g, "")
+			.replace(/[\s\t]+/g, " ");
+		const label = normalizedContent.slice(0, 100).trim();
 		const tags = sortByFrequency(
-			removeStopwords(
-				contentWithoutWhitespaceAndSpecialChars.toLowerCase().split(" ")
-			).filter((tag) => tag.trim() !== "")
+			removeStopwords(normalizedContent.toLowerCase().split(" ")).filter(
+				(tag) => tag.trim() !== ""
+			)
 		);
 		return {
 			id,
