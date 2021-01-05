@@ -11,7 +11,7 @@
 		"start": "npm run build && dist/cli.js"
 	},
 	"files": [
-		"dist/*.js"
+		"dist/**/*.js"
 	],
 	"dependencies": {
 		"@types/ink-spinner": "^3.0.0",
