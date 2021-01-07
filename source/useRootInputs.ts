@@ -1,5 +1,5 @@
 import { useInput } from "ink";
-import { ModuleTypes } from "./app";
+import { ModuleTypes } from "./App";
 
 export function useRootInputs(
 	setModule: (type: ModuleTypes | ((type: ModuleTypes) => ModuleTypes)) => void,
@@ -17,12 +17,12 @@ export function useRootInputs(
 					setModule("new");
 				});
 			}
-			if (input.toLowerCase() === "d") {
+			if (input.toLowerCase() === "d" && selectedChunkId) {
 				setImmediate(() => {
 					setModule("delete");
 				});
 			}
-			if (input.toLowerCase() === "e") {
+			if (input.toLowerCase() === "e" && selectedChunkId) {
 				setImmediate(() => {
 					setModule("edit");
 				});

@@ -62,6 +62,7 @@ export type ChunkEntry = {
 	tags: string[];
 	label: string;
 	content: string;
+	time: number;
 };
 
 export class GistStore {
@@ -96,6 +97,7 @@ export class GistStore {
 			label,
 			tags,
 			content,
+			time: Date.now(),
 		} as ChunkEntry;
 	}
 
@@ -133,7 +135,7 @@ export class GistStore {
 	async createChunk(content: string, gistId: string) {
 		const chunks = await this.getChunks(gistId);
 		const newEntry: ChunkEntry = this.makeEntry(content);
-		chunks.push(newEntry);
+		chunks.unshift(newEntry);
 		return this.fetch(`${API_EP}/${gistId}`, {
 			method: "PATCH",
 			body: JSON.stringify({

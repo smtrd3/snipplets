@@ -3,17 +3,19 @@ import TextInput from "ink-text-input";
 import React, { useState } from "react";
 
 export default function RemoveChunk({
+	chunkId,
 	onConfirm,
 }: {
-	onConfirm: (del: boolean) => void;
+	chunkId: string;
+	onConfirm: (chunkId: string, del: boolean) => void;
 }) {
 	const [response] = useState("");
 
 	const onResponse = (response: string) => {
 		if (["y", "Y"].includes(response.toLowerCase())) {
-			onConfirm(true);
+			onConfirm(chunkId, true);
 		} else {
-			onConfirm(false);
+			onConfirm(chunkId, false);
 		}
 	};
 

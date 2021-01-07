@@ -1,16 +1,11 @@
 import { Box, Text, useInput } from "ink";
 import React, { useEffect } from "react";
+import dedent from "dedent";
 import { useState } from "react";
-import TextInput from "ink-text-input";
-import marked from "marked";
-import markedTerminal from "marked-terminal";
+import TextInput from "../TextInput";
+import Markdown from "ink-markdown";
 import { ChunkEntry } from "../GistStore";
-import Spinner from "ink-spinner";
-
-marked.setOptions({
-	// Define custom renderer
-	renderer: new markedTerminal(),
-});
+import BusyWidget from "./BusyWidget";
 
 type SearchWidgetProps = {
 	fetching: boolean;
@@ -71,11 +66,11 @@ export default function SearchWidget({
 		}
 	});
 
-	useEffect(() => {
+	const onQueryChange = (query: string) => {
+		setQuery(query);
 		setSelectedIndex(0);
-		setSelectedId(filteredItem[0]?.id as string);
 		setPage(0);
-	}, [query]);
+	};
 
 	useEffect(() => {
 		fetchChunks();
@@ -90,6 +85,7 @@ export default function SearchWidget({
 			});
 		});
 		setFilteredItem(filteredItem);
+		setSelectedId(filteredItem[0]?.id || "");
 	}, [query, items]);
 
 	return (
@@ -101,17 +97,12 @@ export default function SearchWidget({
 					</Text>
 					<TextInput
 						value={query}
-						onChange={setQuery}
+						onChange={onQueryChange}
 						placeholder="Search chunks"
 					/>
 				</Box>
 			)}
-			{fetching && (
-				<Box paddingY={1}>
-					<Spinner type="dots" />
-					<Text color="green"> Loading...</Text>
-				</Box>
-			)}
+			{fetching && <BusyWidget />}
 			{fetching === false && (
 				<Box
 					flexDirection="column"
@@ -120,12 +111,15 @@ export default function SearchWidget({
 					padding={1}
 				>
 					<Box>
-						<Text>{marked(filteredItem[selectedIndex]?.content || "")}</Text>
+						<Markdown>
+							{dedent(filteredItem[selectedIndex]?.content || "")}
+						</Markdown>
 					</Box>
 					{!fetching && filteredItem.length > 0 && (
 						<Box paddingLeft={3}>
 							<Text color="redBright">
-								{selectedIndex + 1} of {filteredItem.length}
+								{selectedIndex + 1} of {filteredItem.length}{" "}
+								{filteredItem?.[selectedIndex]?.id}
 							</Text>
 						</Box>
 					)}

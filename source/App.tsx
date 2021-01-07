@@ -1,29 +1,33 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import SearchWidget from "./components/SearchWidget";
+import React, { useCallback, useEffect, useState } from "react";
 import { Text, Box } from "ink";
-import NewSnippet from "./components/NewSnippet";
-import EditWidget from "./components/EditWidget";
-import InitWidget from "./components/InitWidget";
-import { ChunkEntry, GistStore } from "./GistStore";
 import { getConfig, putConfig } from "./config";
 import { useRootInputs } from "./useRootInputs";
+import InitWidget from "./components/InitWidget";
+import NewSnippet from "./components/NewSnippet";
+import EditWidget from "./components/EditWidget";
 import RemoveChunk from "./components/RemoveChunk";
+import SearchWidget from "./components/SearchWidget";
+import BusyWidget from "./components/BusyWidget";
+import { ChunkEntry, GistStore } from "./GistStore";
 
-export type ModuleTypes = "init" | "edit" | "delete" | "new" | "search";
+export type ModuleTypes =
+	| "init"
+	| "edit"
+	| "delete"
+	| "new"
+	| "search"
+	| "busy";
 
 export default function App() {
 	const [gistId, setGistId] = useState<string | null>(null);
-	const [module, setModule] = useState<ModuleTypes>("init");
+	const [module, setModule] = useState<ModuleTypes>("busy");
 	const [gistStore, setGistStore] = useState<GistStore | null>(null);
-	const [chunksFetching, setChunksFetching] = useState(false);
+	const [chunksFetching, setChunksFetching] = useState(true);
 	const [chunks, setChunks] = useState<ChunkEntry[]>([]);
 	const [selectedChunkId, setSelectedChunkId] = useState<string>("");
-	const noUpdateRef = useRef(false);
-
 	useRootInputs(setModule, selectedChunkId);
 
 	const fetchChunks = async () => {
-		if (noUpdateRef.current) return;
 		if (gistId) {
 			setChunksFetching(true);
 			const chunks = (await gistStore?.getChunks(gistId)) || [];
@@ -34,50 +38,32 @@ export default function App() {
 
 	const onCreate = useCallback(
 		async (content: string) => {
-			noUpdateRef.current = true;
-			setChunks([]);
-			setChunksFetching(true);
-			setModule("search");
+			setModule("busy");
 			if (gistId) {
 				await gistStore?.createChunk(content, gistId);
-				noUpdateRef.current = false;
-				await fetchChunks();
-			} else {
-				noUpdateRef.current = false;
 			}
+			setChunksFetching(true);
+			setModule("search");
 		},
 		[gistId]
 	);
 
-	const onEdit = useCallback(
-		async (content: string) => {
-			noUpdateRef.current = true;
-			setChunks([]);
-			setChunksFetching(true);
-			setModule("search");
-			if (gistId) {
-				await gistStore?.updateChunk(gistId, selectedChunkId, content);
-				noUpdateRef.current = false;
-				await fetchChunks();
-			} else {
-				noUpdateRef.current = false;
-			}
-		},
-		[gistId, selectedChunkId]
-	);
-
-	const onRemove = async (intent: boolean) => {
-		noUpdateRef.current = true;
-		setChunks([]);
+	const onEdit = async (chunkId: string, content: string) => {
+		setModule("busy");
+		if (gistId) {
+			await gistStore?.updateChunk(gistId, chunkId, content);
+		}
 		setChunksFetching(true);
 		setModule("search");
-		if (intent && gistId && selectedChunkId && chunks.length > 0) {
-			await gistStore?.removeChunk(gistId, selectedChunkId);
-			noUpdateRef.current = false;
-			await fetchChunks();
-		} else {
-			noUpdateRef.current = false;
+	};
+
+	const onRemove = async (chunkId: string, intent: boolean) => {
+		setModule("busy");
+		if (intent && gistId && chunkId && chunks.length > 0) {
+			await gistStore?.removeChunk(gistId, chunkId);
 		}
+		setChunksFetching(true);
+		setModule("search");
 	};
 
 	const getToken = async (token: string) => {
@@ -90,6 +76,7 @@ export default function App() {
 		}
 		setGistId(gistId);
 		putConfig({ gistId, token });
+		setChunksFetching(true);
 		setModule("search");
 	};
 
@@ -99,6 +86,7 @@ export default function App() {
 			const store = new GistStore(config.token);
 			setGistStore(store);
 			setGistId(config.gistId);
+			setChunksFetching(true);
 			setModule("search");
 		} else {
 			setModule("init");
@@ -106,7 +94,9 @@ export default function App() {
 	}, []);
 
 	const page = () => {
-		if (!gistStore || !gistId) return <InitWidget onInit={getToken} />;
+		if (!(gistStore && gistId) && module !== "busy")
+			return <InitWidget onInit={getToken} />;
+
 		switch (module) {
 			case "init":
 				return <InitWidget onInit={getToken} />;
@@ -124,12 +114,15 @@ export default function App() {
 			case "edit":
 				return (
 					<EditWidget
+						chunkId={selectedChunkId}
 						onChange={onEdit}
 						content={chunks.find((ch) => ch.id === selectedChunkId)?.content}
 					/>
 				);
 			case "delete":
-				return <RemoveChunk onConfirm={onRemove} />;
+				return <RemoveChunk chunkId={selectedChunkId} onConfirm={onRemove} />;
+			case "busy":
+				return <BusyWidget />;
 		}
 	};
 
