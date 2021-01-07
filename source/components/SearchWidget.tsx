@@ -116,10 +116,9 @@ export default function SearchWidget({
 						</Markdown>
 					</Box>
 					{!fetching && filteredItem.length > 0 && (
-						<Box paddingLeft={3}>
+						<Box paddingLeft={3} marginTop={1}>
 							<Text color="redBright">
 								{selectedIndex + 1} of {filteredItem.length}{" "}
-								{filteredItem?.[selectedIndex]?.id}
 							</Text>
 						</Box>
 					)}
